@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var config = require('../config');
+var apiformat = require('../apiformat');
 var request = require('request');
 
 /* GET users listing. */
@@ -10,25 +11,33 @@ router.get('/', function (req, res, next) {
 
 /* POST login info. */
 router.post('/', function (req, res, next) {
-  var opts = config.buildOptions("session", "POST");
+  var statusCode = 200;
+  var success = true;
+  var data = {};
+  var message = 'get user  info success';
 
+  var opts = config.buildOptions("session", "POST");
   opts.body = JSON.stringify(req.body);
+
   request(opts, function (error, response, body) {
-    if (!error) {
+    statusCode = response.statusCode;
+    if (!error && statusCode==201) {
       var info = JSON.parse(body);
-      //set returnInfo
-      var returnInfo = {};
-      returnInfo['username'] = info['username'];
-      returnInfo['name'] = info['name'];
-      returnInfo['email'] = info['email'];
-      returnInfo['private_token'] = info['private_token'];
-      returnInfo['avatar_url'] = info['avatar_url'];
-      res.send(returnInfo);
+      //set return data
+      data['username'] = info['username'];
+      data['name'] = info['name'];
+      data['email'] = info['email'];
+      data['private_token'] = info['private_token'];
+      data['avatar_url'] = info['avatar_url'];
     }
     else {
+      success = false;
       console.log('something wrong!');
-      res.send(body);
+      message = 'something wrong!';
+      if(body) data = body;
     }
+    formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+    res.send(formattedResponse);
   })
 })
 
