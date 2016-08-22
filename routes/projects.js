@@ -7,12 +7,14 @@ router.get('/', function (req, res, next) {
   var withPrivateToken = true;
   var options = config.buildOptions("projects", "GET",true);
   request(options, function (error, response, body) {
+    var info = "Initial info.";
     if (!error && response.statusCode == 200) {
-      var info = JSON.parse(body);
+      info = JSON.parse(body);
       res.send(info);
     }
     else {
       console.log('something wrong!');
+      info = "py sb";
       res.send(info);
     }
   })
