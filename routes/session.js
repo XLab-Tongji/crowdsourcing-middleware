@@ -13,10 +13,17 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   var statusCode = 200;
   var success = true;
-  var data = {};
+  var data = {
+    "username" : null,
+    "name":null,
+    "email":null,
+    "private_token":null,
+    "avatar_url":null
+  };
   var message = 'get user  info success';
 
-  var opts = config.buildOptions("session", "POST");
+console.log(req.body);
+  var opts = config.buildOptions("session", "POST", true);
   opts.body = JSON.stringify(req.body);
 
   request(opts, function (error, response, body) {
@@ -32,8 +39,9 @@ router.post('/', function (req, res, next) {
     }
     else {
       success = false;
-      console.log('something wrong!');
-      message = 'something wrong!';
+      var errInfo = JSON.parse(body);
+      message = errInfo.message;
+      console.log('something wrong! '+ message);
       if(body) data = body;
     }
     var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);

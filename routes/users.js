@@ -33,8 +33,9 @@ router.post('/', function (req, res, next) {
     }
     else {
       success = false;
-      console.log('something wrong!');
-      message = 'something wrong!';
+      var errInfo = JSON.parse(body);
+      message = errInfo.message;
+      console.log('something wrong! '+ message);
       if(body) data = body;
     }
     var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
