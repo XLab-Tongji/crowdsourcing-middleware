@@ -254,4 +254,34 @@ var memberFunc3 = function(req,res){
 // /* GET project Member Info. */
 router.get('/:id/members', [memberFunc1,memberFunc2,memberFunc3]);
 
+/* GET issues listing. */
+router.get('/:id/issues', function (req, res, next) {
+  var statusCode = 200;
+  var success = true;
+  var data = {};
+  var message = 'Get Issues List Success';
+
+  var opts = config.buildOptions("/projects/"+ req.params.id +"/issues", "GET", false, req.get('PRIVATE-TOKEN'));
+  opts.body = JSON.stringify(req.body);
+
+  request(opts, function (error, response, body) {
+    statusCode = response.statusCode;
+    if (!error && statusCode==200) {
+      var info = JSON.parse(body);
+
+      //set return data
+      data = info;
+    }
+    else {
+      success = false;
+      statusCode = 410;
+      var errInfo = JSON.parse(body);
+      message = errInfo.message;
+      console.log('something wrong! '+ message);
+      if(body) data = body;
+    }
+    var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+    res.send(formattedResponse);
+  })
+});
 module.exports = router;

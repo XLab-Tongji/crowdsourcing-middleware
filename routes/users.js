@@ -33,6 +33,7 @@ router.post('/', function (req, res, next) {
     }
     else {
       success = false;
+      statusCode = 410;
       var errInfo = JSON.parse(body);
       message = errInfo.message;
       console.log('something wrong! '+ message);
