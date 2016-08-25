@@ -335,23 +335,23 @@ router.get('/:id/issues', function (req, res,next) {
   })
 });
 
-/* GET issues listing. */
-router.get('/:id/issues/:issueId', function (req, res,next) {
-  var statusCode = 200;
-  var success = true;
-  var data = {};
-  var message = 'Get Issues List Success';
+var issueInfo = {};
+var issueNotes = [];
+var getIssueInfo = function(req,res,rollback){
+  issueInfo = {};
+  initResponseData();
+  message = 'Get Issues Info Success';
 
   var opts = config.buildOptions("/projects/"+ req.params.id +"/issues/"+ req.params.issueId, "GET", false, req.get('PRIVATE-TOKEN'));
   opts.body = JSON.stringify(req.body);
 
   request(opts, function (error, response, body) {
-    statusCode = response.statusCode;
+    var issueInfoStatusCode = response.statusCode;
 
-    if (!error && statusCode==200) {
+    if (!error && issueInfoStatusCode==200) {
       var info = JSON.parse(body);
       //set return data
-      data = info;
+      issueInfo = info;
     }
     else {
       success = false;
@@ -361,8 +361,51 @@ router.get('/:id/issues/:issueId', function (req, res,next) {
       console.log('something wrong! '+ message);
       if(body) data = body;
     }
-    var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
-    res.send(formattedResponse);
+    rollback(null,issueInfo);
   })
+}
+
+var getIssueNote = function(req,res,rollback){
+  issueNotes = [];
+  initResponseData();
+  var message = 'Get Issues Notes Success';
+
+  var opts = config.buildOptions("/projects/"+ req.params.id +"/issues/"+ req.params.issueId+ "/notes", "GET", false, req.get('PRIVATE-TOKEN'));
+  opts.body = JSON.stringify(req.body);
+
+  request(opts, function (error, response, body) {
+    issueInfoStatusCode = response.statusCode;
+
+    if (!error && issueInfoStatusCode==200) {
+      var info = JSON.parse(body);
+      //set return data
+      issueNotes = info;
+    }
+    else {
+      success = false;
+      statusCode = 410;
+      var errInfo = JSON.parse(body);
+      message = errInfo.message;
+      console.log('something wrong! '+ message);
+      if(body) data = body;
+    }
+    rollback(null,issueNotes);
+  })
+}
+
+/* GET issues with notes by issueid. */
+router.get('/:id/issues/:issueId', function (req, res,next) {
+  async.parallel([function(rollback){
+    getIssueNote(req,res,rollback);
+  },function(rollback){
+    getIssueInfo(req,res,rollback);
+  }],
+  function(err, results) {
+      console.log(results);
+      var finalInfo = underscore.extend({},issueInfo,{notes:issueNotes});
+      if(success) data = finalInfo;
+      var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+      res.send(formattedResponse);
+  });
 });
 module.exports = router;
