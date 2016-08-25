@@ -6,7 +6,17 @@ var formatResponse = function (statusCode, message, data, isSuccess) {
         success : isSuccess
     };
     return response;
-},
+}
+var formatResponseInPage = function (statusCode, message, data, paginator, isSuccess) {
+    var response = {
+        code: statusCode,
+        message : message,
+        data : data,
+        paginator : paginator,
+        success : isSuccess
+    };
+    return response;
+}
     apiformat = {
         // formattedResponse{
         //     code: 200,
@@ -14,7 +24,8 @@ var formatResponse = function (statusCode, message, data, isSuccess) {
         //     data : {},
         //     success : true
         // },
-        formatResponse : formatResponse
+        formatResponse : formatResponse,
+        formatResponseInPage : formatResponseInPage
     }
 
 module.exports = apiformat; 
