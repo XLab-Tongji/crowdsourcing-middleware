@@ -1,7 +1,7 @@
 
 var buildOptions = function (urlPartition,method, needRootPrivateToken,privateToken) {
     var options = {
-        url: "http://10.60.38.188:3000/api/v3/" + urlPartition,
+        url: "http://115.159.55.131/api/v3/" + urlPartition,
         method : method,
         headers: {
             'User-Agent': 'request',
@@ -16,7 +16,7 @@ var buildOptions = function (urlPartition,method, needRootPrivateToken,privateTo
     return options;
 },
     config = {
-        baseUrl: "http://10.60.38.188:3000/api/v3",
+        baseUrl: "http://115.159.55.131/api/v3/",
         private_token: "mC9BJod4SaoLb_ZkLQrG", //just for testing
         buildOptions: buildOptions
     }
