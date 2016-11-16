@@ -7,10 +7,10 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var session = require('./routes/session');
-var projects = require('./routes/projects');
+//var projects = require('./routes/projects');
 var users = require('./routes/users');
 var issues = require('./routes/issues');
-var projectstest = require('./routes/projectstest');
+var projects = require('./routes/projectstest');
 
 var app = express();
 
@@ -38,10 +38,10 @@ app.use(cookieParser());
 
 app.use('/', routes);
 app.use('/account/authentication', session);
-app.use('/project',projects);
+//app.use('/project',projects);
 app.use('/account',users);
 app.use('/issues',issues);
-  app.use('/test',projectstest);
+app.use('/project',projects);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
