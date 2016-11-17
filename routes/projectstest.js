@@ -1,5 +1,5 @@
 //created by ni on 11/10
-
+//for the route /project
 var express = require('express');
 var router = express.Router();
 var config = require('../config');
@@ -7,11 +7,8 @@ var apiformat = require('../apiformat');
 var underscore = require('underscore');
 var request = require('request');
 
-router.get('/test',function(req,res,next){
-    res.send('test');
-});
-
 router.route('/')
+//get project information with member
 .get(function(req,res,next){
     var statusCode = 200;
     var success = true;
@@ -29,14 +26,13 @@ router.route('/')
         } else {
             success = false;
             message = 'Get Projects Error!';
-            if(body) projectMemberInfo['projectsMemberErrorMessage'] = body;
-            data.push(projectMemberInfo);
         }
 
         var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
         res.send(formattedResponse);
     });
 })
+//create a project with  current user,project name is required
 .post(function(req,res,next){
     var statusCode = 201;
     var success = true;
@@ -72,12 +68,11 @@ router.route('/')
     });
 })
 
-
 router.route('/:id')
+//update project not implemented yet
 .put(function(req,res,next){
-    var test = 'succes';
-    res.send(req.params.id);
 })
+//delete project belonging to current user with project id
 .delete(function(req,res,next){
     var statusCode = 200;
     var message = 'Project deleted!';
