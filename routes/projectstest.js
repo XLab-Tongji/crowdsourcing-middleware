@@ -18,6 +18,7 @@ router.route('/')
     var data = [];
     var message = 'get project info';
     //var privateToken = 'Y6ze4UDoJyyJAJXyW2fD';
+    var projectMemberInfo=[];
 
     var opts = config.buildOptions("projects/","GET",false,req.get('PRIVATE-TOKEN'));
     opts.body = JSON.stringify(req.body);
