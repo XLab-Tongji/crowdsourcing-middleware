@@ -1,5 +1,6 @@
 //created by ni on 11/20
 //for the route /project
+
 var express = require('express');
 var router = express.Router();
 var config = require('../config');
@@ -20,7 +21,7 @@ router.route('/:id/tree')
     if(req.query.path == undefined) {
         statusCode = 400;
         message = "path not given"
-        success = false;
+        success = fa
         res.send(apiformat.formatResponse(statusCode,message,data,success));
      }
 
@@ -83,8 +84,82 @@ router.route('/:id/tree')
             res.send(formattedResponse);
         });
      }
+});
+
+router.route('/:id/files')
+.get(function(req,res,next){
+    var statusCode = 200;
+    var data = [];
+    var success = true;
+    var message = "get raw text";
+
+    if(req.query.filepath == undefined) {
+        statusCode = 400;
+        message = "path not given"
+        success = false;
+        res.send(apiformat.formatResponse(statusCode,message,data,success));
+     }
+
+    var sha = "";
+    if(req.query.sha == undefined) 
+        sha = "master";
+    else
+        sha = req.query.sha;
+
+    if(statusCode != 400) {
+        var opts = config.buildOptions("projects/"+req.params.id+"/repository/blobs/"+sha+"?filepath="+req.query.filepath,"GET",false,req.get('PRIVATE-TOKEN'));
+        opts.body = JSON.stringify(req.body);
+
+        request(opts,function(error,response,body){
+            statusCode = response.statusCode;
+            if(!error && statusCode == 200){
+                data = body;
+            } else {
+                message = 'get raw text error';
+                success = false;
+            }
+            var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+            res.send(formattedResponse);
+        });
+     }
 })
+.post(function(req,res,next){
 
+})
+.delete(function(req,res,next){
+    var statusCode = 200;
+    var message = "delete file";
+    var data = [];
+    var success = true;
 
+    if(req.body['file_path'] == null || req.body['branch_name'] == null || req.body['commit_message'] == null) {
+        statusCode = 400;
+        message = "bad request";
+        success = false;
+    }
+
+    if(statusCode == 200) {
+        var opts = config.buildOptions("projects/"+req.params.id+"/repository/files","DELETE",false,req.get('PRIVATE-TOKEN'));
+        opts.body = JSON.stringify(req.body);
+
+        request(opts,function(error,response,body){
+            statusCode = response.statusCode;
+            if(!error && statusCode == 200){
+                data = JSON.parse(body);
+            }
+            else {
+                success = false;
+                message = 'delete file Error!';
+            }
+            
+            var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+            res.send(formattedResponse);
+        });
+    }
+    else {
+        var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+        res.send(formattedResponse);
+    }
+});
 
 module.exports = router;

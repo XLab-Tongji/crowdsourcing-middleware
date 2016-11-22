@@ -11,7 +11,7 @@ var session = require('./routes/session');
 var users = require('./routes/users');
 var issues = require('./routes/issues');
 var projects = require('./routes/projectstest');
-var files = require('./routes/files');
+var repository = require('./routes/repository');
 
 var app = express();
 
@@ -43,7 +43,7 @@ app.use('/account/authentication', session);
 app.use('/account',users);
 app.use('/issues',issues);
 app.use('/projects',projects);
-app.use('/project',files);
+app.use('/project',repository);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
