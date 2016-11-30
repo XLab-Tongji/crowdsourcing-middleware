@@ -40,7 +40,7 @@ router.route('/')
     var message = 'Group created';
     var formattedResponse;
 
-    if(req.body['name'] == null || req.body['path'] == null){
+    if(req.body['name'] == null){
         statusCode = 400;
         message = 'Group name or path not specified!';
         data = [];
@@ -49,6 +49,8 @@ router.route('/')
         formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
         res.send(formattedResponse);
     }
+    req.body['path']=req.body['name'];
+    console.log(req.body['path']);
 
     if(statusCode != 400) {
         var opts = config.buildOptions('groups/','POST',false,req.get('PRIVATE-TOKEN'));
