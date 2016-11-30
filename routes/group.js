@@ -87,7 +87,8 @@ router.route('/:id')
 
     if (!error && statusCode==200) {
       var info = JSON.parse(body);
-      data = info;
+      data = info.groups;
+      data.member = info.members;
     }
     else {
       success = false;

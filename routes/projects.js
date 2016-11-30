@@ -292,7 +292,6 @@ router.get('/:id/issues', function (req, res,next) {
   var data = {};
   var message = 'Get Issues List Success';
 
-  console.log(req.query);
   var pageNum = req.query.pageNum;
   var pageSize = req.query.pageSize;
   var order = req.query.order;

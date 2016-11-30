@@ -5,7 +5,8 @@ var apiformat = require('../apiformat');
 var request = require('request');
 
 /* GET issues listing. */
-router.get('/', function (req, res, next) {
+router.route("/")
+.get(function (req, res, next) {
   var statusCode = 200;
   var success = true;
   var data = {};
@@ -34,11 +35,120 @@ router.get('/', function (req, res, next) {
     res.send(formattedResponse);
   })
 
+})
+
+router.route("/project/:id/")
+.get(function(req,res,next){
+  var statusCode = 200;
+  var success = true;
+  var data = [];
+  var message = 'get project issues';
+
+    if(statusCode != 400) {
+      var opts = config.buildOptions("projects/"+req.params.id+"/issues","GET",false,req.get('PRIVATE-TOKEN'));
+      opts.body = JSON.stringify(req.body);
+
+      request(opts,function(error,response,body){
+          statusCode = response.statusCode;
+          if(!error && statusCode == 200){
+              data = JSON.parse(body);
+          } else {
+              success = false;
+              message = 'Get Project Issues Error!';
+          }
+
+          var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+          res.send(formattedResponse);
+      });
+    }
+})
+/* POST . */
+.post(function (req, res, next) {
+  var statusCode = 201;
+  var success = true;
+  var data = [];
+  var message = 'get project issue created';
+  var formattedResponse;
+
+  if(req.body['title'] == null){
+      statusCode = 400;
+      message = 'Issue title not specified';
+      data = [];
+      success = false;
+
+      formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+      res.send(formattedResponse);
+  }
+  
+  if(statusCode != 400) {
+      var opts = config.buildOptions('projects/'+req.params.id+'/issues','POST',false,req.get('PRIVATE-TOKEN'));
+      opts.body = JSON.stringify(req.body);
+
+      request(opts,function(error,response,body){
+          statusCode = response.statusCode;
+          if(!error && statusCode == 201){
+              data = JSON.parse(body);
+          }
+          else {
+              success = false;
+              message = 'Create Projects Error!';
+          }
+          var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+          res.send(formattedResponse);
+      });
+  }
 });
 
-/* POST . */
-router.post('/', function (req, res, next) {
-    res.send('respond with a resource');
+router.route("/project/:id/issueid/:issue_id")
+.put(function(req,res,next){
+  var statusCode = 200;
+  var message = 'Issue updated!';
+  var success = true;
+  var data = [];
+
+  var query = "";
+  if(req.query.state == "close" || req.query.state == "reopen"){
+    query = "?state_event="+req.query.state;
+    console.log(query);
+  }
+
+  var opts = config.buildOptions('projects/'+req.params.id+'/issues/'+req.params.issue_id+query,'PUT',false,req.get('PRIVATE-TOKEN'));
+  opts.body = JSON.stringify(req.body);
+
+  request(opts,function(error,response,body){
+      statusCode = response.statusCode;
+      if(!error && statusCode == 200){
+          data = JSON.parse(body);
+      } else {
+          success = false;
+          message = "Update issue fail";
+      }
+
+      var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+      res.send(formattedResponse);
+  })
+})
+.delete(function(req,res,next){
+  var statusCode = 200;
+  var message = 'Issue deleted!';
+  var success = true;
+  var data = [];
+
+  var opts = config.buildOptions('projects/'+req.params.id+'/issues/'+req.params.issue_id,'DELETE',false,req.get('PRIVATE-TOKEN'));
+  opts.body = JSON.stringify(req.body);
+
+  request(opts,function(error,response,body){
+      statusCode = response.statusCode;
+      if(!error && statusCode == 200){
+          data = JSON.parse(body);
+      } else {
+          success = false;
+          message = 'Issue not deleted!';
+      }
+
+      var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+      res.send(formattedResponse);
+  })
 })
 
 
