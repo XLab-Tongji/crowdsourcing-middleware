@@ -25,8 +25,13 @@ router.route('/:id/tree')
         res.send(apiformat.formatResponse(statusCode,message,data,success));
      }
 
+     var ref_name = "";
+     if(req.query.ref_name != undefined) {
+        ref_name = "&ref_name="+req.query.ref_name;
+     }
+
      if(statusCode != 400) {
-        var opts = config.buildOptions("projects/"+req.params.id+"/repository/tree?path="+req.query.path,"GET",false,req.get('PRIVATE-TOKEN'));
+        var opts = config.buildOptions("projects/"+req.params.id+"/repository/tree?path="+req.query.path+ref_name,"GET",false,req.get('PRIVATE-TOKEN'));
         opts.body = JSON.stringify(req.body);
 
         request(opts,function(error,response,body){
