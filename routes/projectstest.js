@@ -41,32 +41,53 @@ router.route('/')
         var message = 'get project created';
         var formattedResponse;
 
-        if (req.body['name'] == null) {
+        if(req.body['name'] == null || req.body['type'] == null || req.body['namespace'] == null){
             statusCode = 400;
-            message = 'Project name not specified';
+            message = 'Bad request';
             data = [];
             success = false;
 
-            formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+            formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
             res.send(formattedResponse);
         }
-
-        if (statusCode != 400) {
-            var opts = config.buildOptions('projects/', 'POST', false, req.get('PRIVATE-TOKEN'));
+        
+        if(statusCode != 400) {
+            var opts = config.buildOptions('namespaces?search='+req.body['namespace'],'GET',false,req.get('PRIVATE-TOKEN'));
             opts.body = JSON.stringify(req.body);
 
-            request(opts, function (error, response, body) {
-                statusCode = response.statusCode;
-                if (!error && statusCode == 201) {
-                    data = JSON.parse(body);
+            request(opts,function(error,response,body){
+                var tempData = JSON.parse(body);
+                for(var i = 0; i < tempData.length; i ++){
+                    if(tempData[i].kind == req.body['type'] && tempData[i].path == req.body['namespace']){
+                        var namespaceId = tempData[i].id;
+
+                        var optsTemp = config.buildOptions('projects/','POST',false,req.get('PRIVATE-TOKEN'));
+
+                        req.body.namespace_id=namespaceId;
+                        optsTemp.body = JSON.stringify(req.body);
+                        console.log(optsTemp.body);
+                        request(optsTemp,function(error,response,body){
+                            statusCode = response.statusCode;
+                            if(!error && statusCode == 200){
+                                data = JSON.parse(body);
+                            }
+                            else {
+                                success = false;
+                                message = 'Create Projects Error!';
+                            }
+                            
+                    });
+                    }
                 }
-                else {
+                if(tempData.length == 0){
+                    statusCode = 404;
+                    message = "Namespace not found";
                     success = false;
-                    message = 'Create Projects Error!';
                 }
-                var formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+
+                var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
                 res.send(formattedResponse);
-            });
+            })
         }
     })
 
