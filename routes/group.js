@@ -23,6 +23,10 @@ router.route('/')
         statusCode = response.statusCode;
         if(!error && statusCode == 200){
             data = JSON.parse(body);
+            for(var x = 0; x < data.length; x ++) { 
+                data[x].type = 'group';
+            }
+            //data.type = 'group';
         } else {
             success = false;
             message = 'Get Projects Error!';

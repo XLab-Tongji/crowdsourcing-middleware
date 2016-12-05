@@ -41,7 +41,8 @@ router.route('/')
         var message = 'get project created';
         var formattedResponse;
 
-        if(req.body['name'] == null || req.body['type'] == null || req.body['namespace'] == null){
+        //if(req.body['name'] == null || req.body['type'] == null || req.body['namespace'] == null){
+        if(req.body['name'] == null || req.body['namespace'] == null){
             statusCode = 400;
             message = 'Bad request';
             data = [];
@@ -49,6 +50,10 @@ router.route('/')
 
             formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
             res.send(formattedResponse);
+        }
+
+        if(req.body['type'] == null) {
+            req.body['type'] = 'user';
         }
         
         if(statusCode != 400) {
