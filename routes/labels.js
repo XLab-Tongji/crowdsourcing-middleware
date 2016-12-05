@@ -68,12 +68,9 @@ router.route("/:id/labels")
           res.send(formattedResponse);
       });
   }
-});
-
-
-router.route("/project/:id/:name")
+})
 .put(function(req,res,next){
-
+    
 })
 .delete(function(req,res,next){
   var statusCode = 200;
