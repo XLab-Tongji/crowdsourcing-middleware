@@ -71,17 +71,17 @@ router.route('/')
                         req.body.namespace_id=namespaceId;
                         optsTemp.body = JSON.stringify(req.body);
                         console.log(optsTemp.body);
-                        request(optsTemp,function(error,response,body){
-                            statusCode = response.statusCode;
-                            if(!error && statusCode == 200){
-                                data = JSON.parse(body);
+                        request(optsTemp,function(errorT,responseT,bodyT){
+                            statusCode = responseT.statusCode;
+                            if(!errorT && statusCode == 200){
+                                data = JSON.parse(bodyT);
                             }
                             else {
                                 success = false;
                                 message = 'Create Projects Error!';
                             }
                             
-                    });
+                        });
                     }
                 }
                 if(tempData.length == 0){
