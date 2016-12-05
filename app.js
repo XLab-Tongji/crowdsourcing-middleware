@@ -13,6 +13,7 @@ var issues = require('./routes/issues');
 var projects = require('./routes/projectstest');
 var repository = require('./routes/repository');
 var group = require('./routes/group');
+var labels = require('./routes/labels');
 
 var app = express();
 
@@ -40,12 +41,15 @@ app.use(cookieParser());
 
 app.use('/', routes);
 app.use('/account/authentication', session);
-//app.use('/project',projects);
 app.use('/account',users);
-app.use('/issues',issues);
+
 app.use('/projects',projects);
-app.use('/project',repository);
 app.use('/group',group);
+
+app.use('/project',repository);
+app.use('/project',labels);
+app.use('/issues',issues);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

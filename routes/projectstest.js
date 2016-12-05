@@ -127,6 +127,26 @@ router.route('/:id')
     })
     //update project not implemented yet
     .put(function (req, res, next) {
+        var statusCode = 200;
+        var message = 'Project updated!';
+        var success = true;
+        var data = [];
+
+        var opts = config.buildOptions('projects/' + req.params.id, 'PUT', false, req.get('PRIVATE-TOKEN'));
+        opts.body = JSON.stringify(req.body);
+
+        request(opts, function (error, response, body) {
+            statusCode = response.statusCode;
+            if (!error && statusCode == 200) {
+                data = JSON.parse(body);
+            } else {
+                success = false;
+                message = 'Project not updated!';
+            }
+
+            var formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+            res.send(formattedResponse);
+        })
     })
     //delete project belonging to current user with project id
     .delete(function (req, res, next) {

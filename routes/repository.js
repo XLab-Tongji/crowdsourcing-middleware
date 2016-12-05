@@ -21,7 +21,7 @@ router.route('/:id/tree')
     if(req.query.path == undefined) {
         statusCode = 400;
         message = "path not given"
-        success = fa
+        success = false;
         res.send(apiformat.formatResponse(statusCode,message,data,success));
      }
 
