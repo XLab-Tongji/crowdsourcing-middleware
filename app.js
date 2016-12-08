@@ -14,6 +14,7 @@ var projects = require('./routes/projectstest');
 var repository = require('./routes/repository');
 var group = require('./routes/group');
 var labels = require('./routes/labels');
+var milestones = require('./routes/milestone');
 
 var app = express();
 
@@ -48,6 +49,7 @@ app.use('/group',group);
 
 app.use('/project',repository);
 app.use('/project',labels);
+app.use('/project',milestones);
 app.use('/issues',issues);
 
 
