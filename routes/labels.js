@@ -9,26 +9,64 @@ router.route("/:id/labels")
 .get(function (req, res, next) {
     var statusCode = 200;
     var success = true;
-    var data = {};
+    var data = [];
     var message = 'Get Label List Success';
 
-    var opts = config.buildOptions("projects/"+req.params.id+"/labels", "GET", false, req.get('PRIVATE-TOKEN'));
+    var milestone = "";
+    if(req.query.milestone != undefined) {
+        milestone = "?milestone=" + req.query.milestone;
+    }
+
+    var opts = config.buildOptions("projects/"+req.params.id+"/labels" + milestone, "GET", false, req.get('PRIVATE-TOKEN'));
     opts.body = JSON.stringify(req.body);
 
     request(opts, function (error, response, body) {
         statusCode = response.statusCode;
         if (!error && statusCode==200) {
-        var info = JSON.parse(body);
+            var info = JSON.parse(body);
+            data = info.labels;
 
-        //set return data
-        data = info;
-        }
-        else {
-        success = false;
-        statusCode = 410;
-        var errInfo = JSON.parse(body);
-        message = errInfo.message;
-        if(body) data = body;
+            for(var x = 0; x < data.length; x ++) {
+                data[x].issues = [];
+            }
+
+            var completed = {};
+            completed.name = "completed";
+            completed.issues = [];
+
+            var backlog = {};
+            backlog.name = "backlog";
+            backlog.issues = [];
+
+            console.log(info.issues.length);
+            for(var x = 0; x < info.issues.length; x ++) {
+                console.log(info.issues[x].state + "|"+info.issues[x].labels+"|");
+                if(info.issues[x].state == 'closed') {
+                    console.log("closed");
+                    completed.issues.push(info.issues[x]);
+                }
+                else if(info.issues[x].labels == "") {
+                    console.log("yes");
+                    backlog.issues.push(info.issues[x]);
+                }
+                else {
+                    console.log("else");
+                    for (var y = 0; y < data.length; y ++) {
+                        if (data[y].name == info.issues[x].labels) {
+                            data[y].issues.push(info.issues[x]);
+                            break;
+                        }
+                    }
+                } 
+            }
+            data.push(backlog);
+            data.push(completed);
+        } else {
+            success = false;
+            statusCode = 410;
+            var errInfo = JSON.parse(body);
+            message = errInfo.message;
+            if(body) data = body;
         }
         var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
         res.send(formattedResponse);
