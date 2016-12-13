@@ -24,7 +24,7 @@ router.route("/:id/labels")
         statusCode = response.statusCode;
         if (!error && statusCode==200) {
             var info = JSON.parse(body);
-            data = info.labels;
+            //data = info.labels;
 
             for(var x = 0; x < data.length; x ++) {
                 data[x].issues = [];
@@ -34,32 +34,36 @@ router.route("/:id/labels")
             completed.name = "completed";
             completed.issues = [];
 
+            var ongoing = {};
+            ongoing.name = "ongoing";
+            ongoing.issues = [];
+
             var backlog = {};
             backlog.name = "backlog";
             backlog.issues = [];
+
 
             console.log(info.issues.length);
             for(var x = 0; x < info.issues.length; x ++) {
                 console.log(info.issues[x].state + "|"+info.issues[x].labels+"|");
                 if(info.issues[x].state == 'closed') {
-                    console.log("closed");
                     completed.issues.push(info.issues[x]);
                 }
                 else if(info.issues[x].labels == "") {
-                    console.log("yes");
                     backlog.issues.push(info.issues[x]);
                 }
                 else {
-                    console.log("else");
-                    for (var y = 0; y < data.length; y ++) {
-                        if (data[y].name == info.issues[x].labels) {
-                            data[y].issues.push(info.issues[x]);
-                            break;
-                        }
-                    }
+                    // for (var y = 0; y < data.length; y ++) {
+                    //     if (data[y].name == info.issues[x].labels) {
+                    //         data[y].issues.push(info.issues[x]);
+                    //         break;
+                    //     }
+                    // }
+                    ongoing.issues.push(info.issues[x]);
                 } 
             }
             data.push(backlog);
+            data.push(ongoing);
             data.push(completed);
         } else {
             success = false;
