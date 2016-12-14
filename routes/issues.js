@@ -91,7 +91,7 @@ router.route("/project/:id/")
           }
           else {
               success = false;
-              message = 'Create Projects Error!';
+              message = 'Create Issues Error!';
           }
           var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
           res.send(formattedResponse);
@@ -100,6 +100,28 @@ router.route("/project/:id/")
 });
 
 router.route("/project/:id/issueid/:issue_id")
+.get(function(req,res,next) {
+  var statusCode = 200;
+  var message = 'Get Issue !';
+  var success = true;
+  var data = [];
+
+  var opts = config.buildOptions('projects/'+req.params.id+'/issues/'+req.params.issue_id,'GET',false,req.get('PRIVATE-TOKEN'));
+  opts.body = JSON.stringify(req.body);
+
+  request(opts,function(error,response,body){
+      statusCode = response.statusCode;
+      if(!error && statusCode == 200){
+          data = JSON.parse(body);
+      } else {
+          success = false;
+          message = "Get issue fail";
+      }
+
+      var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+      res.send(formattedResponse);
+  })
+})
 .put(function(req,res,next){
   var statusCode = 200;
   var message = 'Issue updated!';
