@@ -142,6 +142,14 @@ router.route("/project/:id/issueid/:issue_id")
             }
         } else if (req.body.assignee_id != undefined) {
             if (req.body.assignee_id == "null") {
+                query = "?assignee_id=null";
+                if (req.body.state == "close") {
+                    return;
+                } else {
+                    if (req.body.state == "reopen" || req.body == "open") {
+                        query += "&state_event=" + req.body.state;
+                    }
+                }
 
             } else if (req.body.assignee_id != "null") {
                 query = "?assignee_id=" + req.body.assignee_id;
