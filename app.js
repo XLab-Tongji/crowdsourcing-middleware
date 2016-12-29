@@ -15,6 +15,7 @@ var repository = require('./routes/repository');
 var group = require('./routes/group');
 var labels = require('./routes/labels');
 var milestones = require('./routes/milestone');
+var commit=require('./routes/commit');
 
 var app = express();
 
@@ -51,6 +52,7 @@ app.use('/project',repository);
 app.use('/project',labels);
 app.use('/project',milestones);
 app.use('/issues',issues);
+app.use('/commit',commit);
 
 
 // catch 404 and forward to error handler
