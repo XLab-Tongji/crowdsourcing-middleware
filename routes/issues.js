@@ -5,31 +5,31 @@ var apiformat = require('../apiformat');
 var request = require('request');
 
 router.route("/mine")
-.get(function(req,res,next){
-    var statusCode = 200;
-    var success = true;
-    var data = {};
-    var message = 'Get Issues List Success';
+    .get(function (req, res, next) {
+        var statusCode = 200;
+        var success = true;
+        var data = {};
+        var message = 'Get Issues List Success';
 
-    var opts = config.buildOptions("todos", "GET", false, req.get('PRIVATE-TOKEN'));
-    opts.body = JSON.stringify(req.body);
+        var opts = config.buildOptions("todos", "GET", false, req.get('PRIVATE-TOKEN'));
+        opts.body = JSON.stringify(req.body);
 
-    request(opts, function (error, response, body) {
-        statusCode = response.statusCode;
-        if (!error && statusCode==200) {
-            var info = JSON.parse(body);
-            data = info;
-        }
-        else {
-            success = false;
-            var errInfo = JSON.parse(body);
-            message = errInfo.message;
-            console.log('something wrong! '+ message);
-        }
-        var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
-        res.send(formattedResponse);
+        request(opts, function (error, response, body) {
+            statusCode = response.statusCode;
+            if (!error && statusCode == 200) {
+                var info = JSON.parse(body);
+                data = info;
+            }
+            else {
+                success = false;
+                var errInfo = JSON.parse(body);
+                message = errInfo.message;
+                console.log('something wrong! ' + message);
+            }
+            var formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+            res.send(formattedResponse);
+        })
     })
-})
 
 /* GET issues listing. */
 router.route("/")
@@ -239,6 +239,79 @@ router.route("/project/:id/issueid/:issue_id")
             res.send(formattedResponse);
         })
     })
+
+//issue comment function 
+router.route("/project/:id/issueid/:issue_id/notes")
+    .get(function (req, res, next) {
+        var statusCode = 200;
+        var message = 'Get Issue comments!';
+        var success = true;
+        var data = [];
+        var dataList = [];
+
+        var opts = config.buildOptions('projects/' + req.params.id + '/issues/' + req.params.issue_id + '/notes', 'GET', false, req.get('PRIVATE-TOKEN'));
+        opts.body = JSON.stringify(req.body);
+
+        request(opts, function (error, response, body) {
+            statusCode = response.statusCode;
+            if (!error && statusCode == 200) {
+
+                data = JSON.parse(body);
+
+            } else {
+                success = false;
+                message = "Get issue comments failed";
+            }
+
+            var formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+            res.send(formattedResponse);
+        })
+    })
+    .post(function (req, res, next) {
+        var statusCode = 200;
+        var message = "Add comment Success";
+        var success = true;
+        var data = [];
+        var query;
+
+
+        if (req.body.body == null) {
+            statusCode = 400;
+            message = 'issue comment not specified';
+            data = [];
+            success = false;
+
+            formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+            res.send(formattedResponse);
+
+        } else {
+            query = req.body.body;
+        }
+        var opts = config.buildOptions('projects/' + req.params.id + '/issues/' + req.params.issue_id + '/notes?body=' + query, 'POST', false, req.get('PRIVATE-TOKEN'));
+        opts.body = JSON.stringify(req.body);
+
+        request(opts, function (error, response, body) {
+            statusCode = response.statusCode;
+            if (!error && statusCode == 201) {
+                data = JSON.parse(body);
+            } else {
+                success = false;
+                message = "Update issue comment failed";
+            }
+
+            var formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
+            res.send(formattedResponse);
+        })
+
+
+    })
+
+
+
+
+
+
+
 
 
 module.exports = router;
