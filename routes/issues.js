@@ -302,8 +302,6 @@ router.route("/project/:id/issueid/:issue_id/notes")
             var formattedResponse = apiformat.formatResponse(statusCode, message, data, success);
             res.send(formattedResponse);
         })
-
-
     })
 
 
