@@ -18,6 +18,7 @@ router.route("/mine")
             statusCode = response.statusCode;
             if (!error && statusCode == 200) {
                 var info = JSON.parse(body);
+                
                 data = info;
             }
             else {

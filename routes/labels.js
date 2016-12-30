@@ -10,6 +10,7 @@ router.route("/:id/labels")
     var statusCode = 200;
     var success = true;
     var data = [];
+    var dataResult={};
     var message = 'Get Label List Success';
 
     var opts = config.buildOptions("projects/"+req.params.id+"/labels", "GET", false, req.get('PRIVATE-TOKEN'));
@@ -19,13 +20,27 @@ router.route("/:id/labels")
         statusCode = response.statusCode;
         if (!error && statusCode==200) {
             var info = JSON.parse(body);
+            
             data = info.labels;
+            for(var i=0;i<data.length;i++){
+                var name=data[i].name;
+                var content=data[i];
+                // var tempResult={name:content};
+                // JSON.stringify(tempResult);
+                dataResult[name]=content;
+            }
+
+
+
+            
+
+
         } else {
             success = false;
             var errInfo = JSON.parse(body);
             message = errInfo.message;
         }
-        var formattedResponse = apiformat.formatResponse(statusCode,message,data,success);
+        var formattedResponse = apiformat.formatResponse(statusCode,message,dataResult,success);
         res.send(formattedResponse);
     })
 })
