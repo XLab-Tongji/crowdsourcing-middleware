@@ -16,6 +16,7 @@ var group = require('./routes/group');
 var labels = require('./routes/labels');
 var milestones = require('./routes/milestone');
 var commit=require('./routes/commit');
+var codeAnalysis=require('./routes/codeAnalysis');
 
 var app = express();
 
@@ -53,6 +54,8 @@ app.use('/project',labels);
 app.use('/project',milestones);
 app.use('/issues',issues);
 app.use('/commit',commit);
+
+app.use('/codeAnalysis',codeAnalysis);
 
 
 // catch 404 and forward to error handler
